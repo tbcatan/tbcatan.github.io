@@ -15,7 +15,7 @@ initMessages().then(() => {
   renderLoop(clock.state, clock.version, clock.publish);
 
   if (clock.state()) {
-    element("clock-state").classList.remove("hidden");
+    element("game").classList.remove("hidden");
   } else {
     openEditMenu(clock.version(), (createClockMenu) => {
       element("cancel-create-clock", createClockMenu).remove();

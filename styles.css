@@ -28,6 +28,24 @@ body {
   display: none !important;
 }
 
+button {
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+
+  color: inherit;
+  background: none;
+
+  border: 1px solid white;
+  border-radius: 6px;
+
+  padding: 12px 18px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
 .center {
   display: flex;
   justify-content: center;
@@ -52,12 +70,18 @@ body {
   font-size: 60px;
 }
 
-#clock-state {
+#game {
   display: flex;
   flex-direction: column;
   gap: 36px;
 
   min-width: 300px;
+}
+
+#clock-state {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
 }
 
 .clock-info {
@@ -107,26 +131,56 @@ body {
   gap: 12px;
 }
 
-button {
-  font-size: inherit;
-  font-family: inherit;
-  line-height: inherit;
-
-  color: inherit;
-  background: none;
-
-  border: 1px solid white;
-  border-radius: 6px;
-
-  padding: 12px 18px;
-}
-
-button:hover {
-  cursor: pointer;
-}
-
 .clock-button {
   min-width: 65px;
+}
+
+.dice-section {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 12px;
+}
+
+.dice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 48px;
+}
+
+.dice.faded {
+  opacity: 0.3;
+}
+
+.die-wrapper {
+  position: relative;
+}
+
+.red-die {
+  color: crimson;
+}
+
+.red-die-background {
+  background-color: gold;
+}
+
+.yellow-die {
+  color: gold;
+}
+
+.yellow-die-background {
+  background-color: crimson;
+}
+
+.red-die-background,
+.yellow-die-background {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  top: 6px;
+  left: 3px;
+  z-index: -1;
 }
 
 .create-clock {

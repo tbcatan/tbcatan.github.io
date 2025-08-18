@@ -14,7 +14,9 @@
         <div>Connecting...</div>
         <i class="fa-solid fa-spinner fa-spin"></i>
       </div>
-      <div id="clock-state" class="hidden"></div>
+      <div id="game" class="hidden">
+        <div id="clock-state"></div>
+      </div>
       <div id="edit"></div>
     </div>
     <div class="screen-lock">
@@ -42,6 +44,9 @@
     <button class="clock-button" onclick="openEditMenu(clock.version())">
       <i class="fa-solid fa-pen-to-square"></i>
     </button>
+  </template>
+  <template id="dice-button">
+    <button onclick="rollDice()"><i class="fa-solid fa-dice"></i></button>
   </template>
   <template id="create-clock">
     <div class="create-clock">
@@ -71,6 +76,7 @@
   <script src="render.js"></script>
   <script src="edit.js"></script>
   <script src="connect.js"></script>
+  <script src="dice.js"></script>
   <script src="zoom.js"></script>
   <script src="wake-lock.js"></script>
 </html>

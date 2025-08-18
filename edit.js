@@ -3,7 +3,7 @@ let editMenuOpenedClockVersion = null;
 const openEditMenu = (clockVersion, modifyEditMenu) => {
   const createClockMenu = template("create-clock");
   modifyEditMenu?.(createClockMenu);
-  element("clock-state").classList.add("hidden");
+  element("game").classList.add("hidden");
   element("edit").replaceChildren(createClockMenu);
   editMenuOpenedClockVersion = clockVersion;
 };
@@ -11,7 +11,7 @@ const openEditMenu = (clockVersion, modifyEditMenu) => {
 const closeEditMenu = (clockVersion) => {
   if (clockVersion >= editMenuOpenedClockVersion) {
     element("edit").replaceChildren();
-    element("clock-state").classList.remove("hidden");
+    element("game").classList.remove("hidden");
     editMenuOpenedClockVersion = null;
   }
 };
