@@ -13,15 +13,15 @@ const rollDice = () => {
   let eventDieKey;
   switch (eventDie) {
     case 0: {
-      eventDieKey = "yellow";
+      eventDieKey = "yellow-progress";
       break;
     }
     case 1: {
-      eventDieKey = "blue";
+      eventDieKey = "blue-progress";
       break;
     }
     case 2: {
-      eventDieKey = "green";
+      eventDieKey = "green-progress";
       break;
     }
     default: {
@@ -60,6 +60,23 @@ const getNumberedDieIcon = (number) => {
   }
 };
 
+const getEventDieIcon = (key) => {
+  switch (key) {
+    case "yellow-progress": {
+      return "castle-yellow.svg";
+    }
+    case "blue-progress": {
+      return "castle-blue.svg";
+    }
+    case "green-progress": {
+      return "castle-green.svg";
+    }
+    case "barbarians": {
+      return "ship.svg";
+    }
+  }
+};
+
 const updateDiceSection = (diceState, clockState) => {
   const diceEls = [];
 
@@ -91,7 +108,11 @@ const updateDiceSection = (diceState, clockState) => {
     diceEls.push(
       createElement("div", {
         class: ["dice", faded ? "faded" : null].filter((s) => s).join(" "),
-        children: [createNumberedDie(diceRoll.redDie, "red-die"), createNumberedDie(diceRoll.yellowDie, "yellow-die")],
+        children: [
+          createNumberedDie(diceRoll.redDie, "red-die"),
+          createNumberedDie(diceRoll.yellowDie, "yellow-die"),
+          createElement("img", { class: "event-die", attributes: { src: getEventDieIcon(diceRoll.eventDie) } }),
+        ],
       })
     );
   }
