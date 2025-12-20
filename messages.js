@@ -53,14 +53,14 @@ const sendMessage = (key, version, data) =>
     }
   });
 
-const [message, initMessages] = (() => {
+const { message, initMessages } = (() => {
   const messageStates = new Map();
   const messageVersions = new Map();
   const messageListeners = new Map();
 
   const updateMessage = (key, version, data) => {
-    const currentVersion = messageVersions.get(key);
-    if (currentVersion == undefined || version > currentVersion) {
+    const currentVersion = messageVersions.get(key) ?? 0;
+    if (version > currentVersion) {
       messageStates.set(key, data);
       messageVersions.set(key, version);
       messageListeners.get(key)?.forEach((listener) => listener());
@@ -79,8 +79,8 @@ const [message, initMessages] = (() => {
     )
   );
 
-  return [
-    (key) => {
+  return {
+    message: (key) => {
       const state = () => messageStates.get(key) ?? null;
       const version = () => messageVersions.get(key) ?? 0;
 
@@ -112,8 +112,8 @@ const [message, initMessages] = (() => {
 
       return { key, state, version, subscribe, publish };
     },
-    async () => {
+    initMessages: async () => {
       await initSnapshots;
     },
-  ];
+  };
 })();

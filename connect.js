@@ -17,12 +17,12 @@ initMessages().then(() => {
   if (clock.state()) {
     element("game").classList.remove("hidden");
   } else {
-    openEditMenu(clock.version(), (createClockMenu) => {
+    openEditMenu((createClockMenu) => {
       element("cancel-create-clock", createClockMenu).remove();
     });
     const subscription = clock.subscribe((clockState) => {
       if (clockState) {
-        closeEditMenu(clock.version());
+        closeEditMenu();
         subscription.unsubscribe();
       }
     });

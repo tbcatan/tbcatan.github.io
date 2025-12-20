@@ -1,19 +1,13 @@
-let editMenuOpenedClockVersion = null;
-
-const openEditMenu = (clockVersion, modifyEditMenu) => {
+const openEditMenu = (modifyEditMenu) => {
   const createClockMenu = template("create-clock");
   modifyEditMenu?.(createClockMenu);
   element("game").classList.add("hidden");
   element("edit").replaceChildren(createClockMenu);
-  editMenuOpenedClockVersion = clockVersion;
 };
 
-const closeEditMenu = (clockVersion) => {
-  if (clockVersion >= editMenuOpenedClockVersion) {
-    element("edit").replaceChildren();
-    element("game").classList.remove("hidden");
-    editMenuOpenedClockVersion = null;
-  }
+const closeEditMenu = () => {
+  element("edit").replaceChildren();
+  element("game").classList.remove("hidden");
 };
 
 const getNewClockState = (playerString, timeMinutes, incrementSeconds) => {
@@ -47,7 +41,7 @@ const getNewClockState = (playerString, timeMinutes, incrementSeconds) => {
   };
 };
 
-const createNewClock = (clockVersion, publishClockState) => {
+const createNewClock = (publishClockState) => {
   const newClockState = getNewClockState(
     element("player-input").innerText,
     element("time-input").value,
@@ -56,5 +50,5 @@ const createNewClock = (clockVersion, publishClockState) => {
   if (!newClockState) {
     return Promise.reject();
   }
-  return publishClockState(newClockState, clockVersion).then(() => closeEditMenu(clockVersion));
+  return publishClockState(newClockState).then(closeEditMenu);
 };
