@@ -64,7 +64,7 @@
       </div>
       <div id="create-clock-controls" class="controls">
         <button id="cancel-create-clock" onclick="closeEditMenu()">Cancel</button>
-        <button id="submit-create-clock" onclick="createNewClock(clock.publish)">Create New Clock</button>
+        <button id="submit-create-clock" onclick="createNewClock(publishNewClock)">Create New Clock</button>
       </div>
     </div>
   </template>
@@ -77,4 +77,11 @@
   <script src="dice.js"></script>
   <script src="zoom.js"></script>
   <script src="wake-lock.js"></script>
+  <script>
+    const publishNewClock = (clockState) =>
+      publishMessages([
+        { key: clock.key, data: clockState },
+        { key: dice.key, data: null },
+      ]);
+  </script>
 </html>

@@ -30,11 +30,14 @@ const rollDice = () => {
     }
   }
   const diceRoll = { redDie: redDie + 1, yellowDie: yellowDie + 1, eventDie: eventDieKey };
-  // TODO: synchronize dice and clock versions
-  dice.publish({
-    ...dice.state(),
-    [clock.state().turn]: diceRoll,
-  });
+  dice.publish(
+    {
+      ...dice.state(),
+      [clock.state().turn]: diceRoll,
+    },
+    dice.version(),
+    [{ key: clock.key, version: clock.version() }]
+  );
 };
 
 const getNumberedDieIcon = (number) => {

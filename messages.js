@@ -40,11 +40,11 @@ const getMessageSnapshots = () =>
     }
   });
 
-const sendMessage = (key, version, data) =>
+const sendMessages = (messages) =>
   fetch(`${messageServer}/message`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: [{ key, version, data }] }),
+    body: JSON.stringify(messages),
   }).then((response) => {
     if (response.ok) {
       return response;
@@ -53,7 +53,7 @@ const sendMessage = (key, version, data) =>
     }
   });
 
-const { message, initMessages } = (() => {
+const { message, initMessages, publishMessages } = (() => {
   const messageStates = new Map();
   const messageVersions = new Map();
   const messageListeners = new Map();
@@ -79,6 +79,23 @@ const { message, initMessages } = (() => {
     )
   );
 
+  const publishMessages = async (messages, synchronize) => {
+    const newMessages = messages.map((message) => ({
+      key: message.key,
+      version: (message.version ?? messageVersions.get(message.key) ?? 0) + 1,
+      data: message.data,
+    }));
+    const response = await sendMessages({
+      messages: newMessages,
+      synchronize: synchronize?.map((synchronize) => ({
+        key: synchronize.key,
+        version: synchronize.version ?? messageVersions.get(synchronize.key) ?? 0,
+      })),
+    });
+    newMessages.forEach((message) => updateMessage(message.key, message.version, message.data));
+    return response;
+  };
+
   return {
     message: (key) => {
       const state = () => messageStates.get(key) ?? null;
@@ -103,17 +120,13 @@ const { message, initMessages } = (() => {
         };
       };
 
-      const publish = async (data, lockedVersion) => {
-        const nextVersion = (lockedVersion ?? version()) + 1;
-        const response = await sendMessage(key, nextVersion, data);
-        updateMessage(key, nextVersion, data);
-        return response;
-      };
+      const publish = (data, version, synchronize) => publishMessages([{ key, version, data }], synchronize);
 
       return { key, state, version, subscribe, publish };
     },
     initMessages: async () => {
       await initSnapshots;
     },
+    publishMessages,
   };
 })();
