@@ -40,11 +40,11 @@ const getMessageSnapshots = () =>
     }
   });
 
-const sendMessage = (key, version, message) =>
-  fetch(`${messageServer}/message/${key}/${version}`, {
+const sendMessage = (key, version, data) =>
+  fetch(`${messageServer}/message`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(message),
+    body: JSON.stringify({ messages: [{ key, version, data }] }),
   }).then((response) => {
     if (response.ok) {
       return response;
