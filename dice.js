@@ -97,7 +97,7 @@ const getEventDieIcon = (key) => {
 const updateDiceSection = (diceState, clockState) => {
   const diceEls = [];
 
-  if (clockState?.running != null) {
+  if (clockState?.running != null || clockState?.turn === 0) {
     diceEls.push(template("dice-button"));
   }
 
