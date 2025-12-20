@@ -30,10 +30,24 @@ const rollDice = () => {
     }
   }
   const diceRoll = { redDie: redDie + 1, yellowDie: yellowDie + 1, eventDie: eventDieKey };
+
+  const turn = clock.state().turn;
+  const name = clock.state().clocks?.[clock.state().running ?? clock.state().paused]?.name;
+  const currentDice = dice.state()?.[turn];
   dice.publish(
     {
       ...dice.state(),
-      [clock.state().turn]: diceRoll,
+      [turn]: {
+        ...currentDice,
+        name: currentDice?.name ?? name,
+        rolls: [
+          ...(currentDice?.rolls?.map((roll) => ({ ...roll, active: false })) ?? []),
+          {
+            ...diceRoll,
+            active: turn > 0,
+          },
+        ],
+      },
     },
     dice.version(),
     [{ key: clock.key, version: clock.version() }]
@@ -88,14 +102,17 @@ const updateDiceSection = (diceState, clockState) => {
   }
 
   let diceRoll;
+  let diceRollTurn;
   for (let i = clockState?.turn; i >= 0; i--) {
-    diceRoll = diceState?.[i];
-    if (diceRoll) {
+    const rolls = diceState?.[i]?.rolls;
+    if (rolls?.length) {
+      diceRoll = rolls[rolls.length - 1];
+      diceRollTurn = i;
       break;
     }
   }
   if (diceRoll) {
-    const faded = diceRoll !== diceState[clockState.turn];
+    const faded = diceRollTurn !== clockState.turn;
     const createNumberedDie = (number, colorClass) =>
       createElement("div", {
         class: "die-wrapper",

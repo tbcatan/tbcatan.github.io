@@ -3,3 +3,10 @@ interface Dice {
   yellowDie: 1 | 2 | 3 | 4 | 5 | 6;
   eventDie: "barbarians" | "yellow-progress" | "blue-progress" | "green-progress";
 }
+
+interface DiceHistory {
+  [turn: number]: {
+    name: string;
+    rolls: (Dice & { active: boolean })[];
+  };
+}
