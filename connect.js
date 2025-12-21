@@ -1,5 +1,3 @@
-const clock = message("clock");
-
 let connected = false;
 
 sleep(250).then(() => {
@@ -28,3 +26,9 @@ initMessages().then(() => {
     });
   }
 });
+
+const publishNewClock = (clockState) =>
+  publishMessages([
+    { key: clock.key, data: clockState },
+    { key: dice.key, data: null },
+  ]);

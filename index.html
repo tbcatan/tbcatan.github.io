@@ -73,15 +73,9 @@
   <script src="controls.js"></script>
   <script src="render.js"></script>
   <script src="edit.js"></script>
-  <script src="connect.js"></script>
+  <script src="clock.js"></script>
   <script src="dice.js"></script>
+  <script src="connect.js"></script>
   <script src="zoom.js"></script>
   <script src="wake-lock.js"></script>
-  <script>
-    const publishNewClock = (clockState) =>
-      publishMessages([
-        { key: clock.key, data: clockState },
-        { key: dice.key, data: null },
-      ]);
-  </script>
 </html>
