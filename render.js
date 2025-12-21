@@ -1,3 +1,5 @@
+const alertTimeMs = 10 * 1000;
+
 const renderLoop = (getClockState, getClockVersion, publishClockState) => {
   let clockState;
   let clockVersion;
@@ -5,16 +7,24 @@ const renderLoop = (getClockState, getClockVersion, publishClockState) => {
     try {
       const newClockState = getClockState();
       const newClockVersion = getClockVersion();
+      const now = Date.now();
+      const runningClockTimeMs =
+        clockState?.running != null
+          ? runningClockTime(clockState.clocks[clockState.running].time, clockState.timestamp, now)
+          : null;
       if (newClockState !== clockState || newClockVersion !== clockVersion) {
-        renderClocks(newClockState, newClockVersion, publishClockState);
+        renderClocks(newClockState, newClockVersion, publishClockState, now);
         clockState = newClockState;
         clockVersion = newClockVersion;
       } else if (clockState?.running != null) {
         element("clock-state")
           .querySelector(".clocks")
-          .children[clockState.running].querySelector(".time").textContent = formatTime(
-          runningClockTime(clockState.clocks[clockState.running].time, clockState.timestamp)
-        );
+          .children[clockState.running].querySelector(".time").textContent = formatTime(runningClockTimeMs);
+      }
+      if (clockState?.running != null && runningClockTimeMs >= 0 && runningClockTimeMs < alertTimeMs) {
+        document.body.classList.add("alert");
+      } else {
+        document.body.classList.remove("alert");
       }
     } finally {
       requestAnimationFrame(() => loop());
@@ -28,7 +38,7 @@ const renderLoop = (getClockState, getClockVersion, publishClockState) => {
   };
 };
 
-const renderClocks = (clockState, clockVersion, publishClockState) => {
+const renderClocks = (clockState, clockVersion, publishClockState, now) => {
   const turnInfo = createTurnInfo(clockState?.turn);
   const incrementInfo = createIncrementInfo(clockState?.increment);
   const info = [turnInfo, incrementInfo].filter((el) => el);
@@ -38,7 +48,7 @@ const renderClocks = (clockState, clockVersion, publishClockState) => {
     const running = index === clockState.running;
     const paused = index === clockState.paused;
     const name = clock.name;
-    const time = running ? runningClockTime(clock.time, clockState.timestamp) : clock.time;
+    const time = running ? runningClockTime(clock.time, clockState.timestamp, now) : clock.time;
 
     const clockEl = createClock({ name, time, running, paused });
     if (running) {
@@ -111,8 +121,8 @@ const createIncrementInfo = (increment) => {
   return incrementInfo;
 };
 
-const runningClockTime = (time, asOfTimestamp) => {
-  return time - Math.max(Date.now() - asOfTimestamp, 0);
+const runningClockTime = (initialTime, asOfTimestamp, now = Date.now()) => {
+  return initialTime - Math.max(now - asOfTimestamp, 0);
 };
 
 const formatTime = (time) => {

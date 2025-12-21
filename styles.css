@@ -139,6 +139,23 @@ button:hover {
   min-width: 65px;
 }
 
+@keyframes alert {
+  0% {
+    background-color: black;
+  }
+  100% {
+    background-color: crimson;
+  }
+}
+
+.alert {
+  animation-name: alert;
+  animation-duration: 0.25s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+
 .dice-section {
   display: flex;
   justify-content: space-evenly;
