@@ -46,6 +46,10 @@ button:hover {
   cursor: pointer;
 }
 
+.clickable:hover {
+  cursor: pointer;
+}
+
 .center {
   display: flex;
   justify-content: center;

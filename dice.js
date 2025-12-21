@@ -1,6 +1,6 @@
 const dice = message("dice");
 
-const rollDice = () => {
+const getDiceRoll = () => {
   let roll;
   do {
     roll = crypto.getRandomValues(new Uint8Array(1))[0];
@@ -29,14 +29,18 @@ const rollDice = () => {
       break;
     }
   }
-  const diceRoll = { redDie: redDie + 1, yellowDie: yellowDie + 1, eventDie: eventDieKey };
+  return { redDie: redDie + 1, yellowDie: yellowDie + 1, eventDie: eventDieKey };
+};
 
-  const turn = clock.state().turn;
-  const name = clock.state().clocks?.[clock.state().running ?? clock.state().paused]?.name;
-  const currentDice = dice.state()?.[turn];
+const rollDice = ({ diceState, diceVersion, clockState, clockVersion }) => {
+  const diceRoll = getDiceRoll();
+
+  const turn = clockState.turn;
+  const name = clockState.clocks?.[clockState.running ?? clockState.paused]?.name;
+  const currentDice = diceState?.[turn];
   dice.publish(
     {
-      ...dice.state(),
+      ...diceState,
       [turn]: {
         ...currentDice,
         name: currentDice?.name ?? name,
@@ -49,8 +53,8 @@ const rollDice = () => {
         ],
       },
     },
-    dice.version(),
-    [{ key: clock.key, version: clock.version() }]
+    diceVersion,
+    [{ key: clock.key, version: clockVersion }]
   );
 };
 
@@ -94,12 +98,8 @@ const getEventDieIcon = (key) => {
   }
 };
 
-const updateDiceSection = (diceState, clockState) => {
+const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
   const diceEls = [];
-
-  if (clockState?.running != null || clockState?.turn === 0) {
-    diceEls.push(template("dice-button"));
-  }
 
   let diceRoll;
   let diceRollTurn;
@@ -111,6 +111,9 @@ const updateDiceSection = (diceState, clockState) => {
       break;
     }
   }
+
+  const canRollDice = clockState?.running != null || clockState?.turn === 0;
+
   if (diceRoll) {
     const faded = diceRollTurn !== clockState.turn;
     const createNumberedDie = (number, colorClass) =>
@@ -135,13 +138,45 @@ const updateDiceSection = (diceState, clockState) => {
         ],
       })
     );
+  } else if (canRollDice) {
+    diceEls.push(template("dice-button"));
   }
 
-  const diceSection = diceEls.length > 0 ? createElement("div", { class: "dice-section", children: diceEls }) : null;
+  const diceSection =
+    diceEls.length > 0
+      ? createElement("div", {
+          class: ["dice-section", canRollDice ? "clickable" : null].filter((s) => s).join(" "),
+          children: diceEls,
+        })
+      : null;
+  if (diceSection && canRollDice) {
+    diceSection.addEventListener("click", () =>
+      rollDice({
+        diceState,
+        diceVersion,
+        clockState,
+        clockVersion,
+      })
+    );
+  }
 
   element("game").replaceChildren(...[element("clock-state"), diceSection].filter((e) => e));
 };
 
-dice.subscribe((diceState) => updateDiceSection(diceState, clock.state()));
+dice.subscribe((diceState, diceVersion) =>
+  updateDiceSection({
+    diceState,
+    diceVersion,
+    clockState: clock.state(),
+    clockVersion: clock.version(),
+  })
+);
 
-clock.subscribe((clockState) => updateDiceSection(dice.state(), clockState));
+clock.subscribe((clockState, clockVersion) =>
+  updateDiceSection({
+    diceState: dice.state(),
+    diceVersion: dice.version(),
+    clockState,
+    clockVersion,
+  })
+);
