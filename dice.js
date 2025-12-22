@@ -99,8 +99,6 @@ const getEventDieIcon = (key) => {
 };
 
 const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
-  const diceEls = [];
-
   let diceRoll;
   let diceRollTurn;
   for (let i = clockState?.turn; i >= 0; i--) {
@@ -115,6 +113,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   const canRollDice = clockState?.running != null || clockState?.turn === 0;
   const isCurrentDiceRoll = diceRoll && diceRollTurn === clockState?.turn;
 
+  const diceEls = [];
   if (diceRoll) {
     const createNumberedDie = (number, colorClass) =>
       createElement("div", {

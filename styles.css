@@ -156,10 +156,8 @@ button:hover {
 }
 
 .dice-section {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  gap: 12px;
+  padding: 0 12px;
+  margin: 0 auto;
 }
 
 .dice {
