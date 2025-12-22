@@ -81,6 +81,7 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
     controls.push(template("play-button"));
   }
   controls.push(template("edit-button"));
+  controls.push(template("dice-history-button"));
   const controlsEl = createElement("div", { class: "controls", children: controls });
 
   element("clock-state").replaceChildren(...[infoEl, clocksEl, controlsEl].filter((el) => el));

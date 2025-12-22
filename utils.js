@@ -44,6 +44,9 @@ const createElement = (tag, options) => {
   if (options?.class) {
     newElement.setAttribute("class", options.class);
   }
+  if (options?.textContent) {
+    newElement.textContent = options.textContent;
+  }
   if (options?.children) {
     newElement.append(...options.children);
   }

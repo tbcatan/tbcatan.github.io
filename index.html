@@ -18,6 +18,22 @@
         <div id="clock-state"></div>
       </div>
       <div id="edit"></div>
+      <div id="dice-history" class="hidden">
+        <div class="dice-breakdown">
+          <div>Dice Breakdown</div>
+          <div class="table table-4">
+            <div class="table-row">
+              <div class="table-cell">Roll</div>
+              <div class="table-cell">Actual #</div>
+              <div class="table-cell">Expected #</div>
+              <div class="table-cell">Rank (%)</div>
+            </div>
+            <div id="dice-table-body" class="table-body"></div>
+          </div>
+          <div>χ² = <span id="dice-chi-square-value"></span></div>
+        </div>
+        <button onclick="closeDiceHistory()">Back</button>
+      </div>
     </div>
     <div class="screen-lock">
       <i id="screen-locked" class="fa-solid fa-lock hidden"></i>
@@ -43,6 +59,11 @@
   <template id="edit-button">
     <button class="clock-button" onclick="openEditMenu()">
       <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+  </template>
+  <template id="dice-history-button">
+    <button class="clock-button" onclick="openDiceHistory()">
+      <i class="fa-solid fa-chart-simple"></i>
     </button>
   </template>
   <template id="dice-button">
@@ -76,6 +97,7 @@
   <script src="clock.js"></script>
   <script src="dice.js"></script>
   <script src="connect.js"></script>
+  <script src="dice-history.js"></script>
   <script src="zoom.js"></script>
   <script src="wake-lock.js"></script>
 </html>

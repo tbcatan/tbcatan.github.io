@@ -45,7 +45,7 @@ const rollDice = ({ diceState, diceVersion, clockState, clockVersion }) => {
         ...currentDice,
         name: currentDice?.name ?? name,
         rolls: [
-          ...(currentDice?.rolls?.map((roll) => ({ ...roll, active: false })) ?? []),
+          ...(currentDice?.rolls ?? []),
           {
             ...diceRoll,
             active: turn > 0,

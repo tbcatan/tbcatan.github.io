@@ -78,8 +78,8 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 36px;
-
   min-width: 300px;
+  white-space: nowrap;
 }
 
 #clock-state {
@@ -113,7 +113,6 @@ button:hover {
 
   width: 100%;
   min-width: fit-content;
-  white-space: nowrap;
 }
 
 .clock.paused {
@@ -272,6 +271,46 @@ input,
 .time-input {
   width: 66px;
   text-align: center;
+}
+
+#dice-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  white-space: nowrap;
+}
+
+.dice-breakdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.table {
+  display: grid;
+  border-top: 1px solid white;
+  border-left: 1px solid white;
+}
+
+.table-4 {
+  grid-template-columns: repeat(4, min-content);
+}
+
+.table-body,
+.table-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+}
+
+.table-cell {
+  height: 100%;
+  padding: 3px 6px;
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+  white-space: nowrap;
 }
 
 .screen-lock {
