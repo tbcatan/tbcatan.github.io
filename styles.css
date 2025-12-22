@@ -142,16 +142,18 @@ button:hover {
   0% {
     background-color: black;
   }
-  100% {
+  50% {
     background-color: firebrick;
+  }
+  100% {
+    background-color: black;
   }
 }
 
 .alert {
   animation-name: alert;
-  animation-duration: 0.25s;
+  animation-duration: 0.5s;
   animation-iteration-count: infinite;
-  animation-direction: alternate;
   animation-timing-function: ease-in-out;
 }
 
@@ -169,6 +171,31 @@ button:hover {
 
 .faded {
   opacity: 0.3;
+}
+
+@keyframes dice-roll {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(0, 20%) rotate(90deg);
+  }
+  50% {
+    transform: translate(0, 0) rotate(180deg);
+  }
+  75% {
+    transform: translate(0, -10%) rotate(270deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg);
+  }
+}
+
+.dice-roll {
+  animation-name: dice-roll;
+  animation-duration: 0.25s;
+  animation-iteration-count: 2;
+  animation-timing-function: linear;
 }
 
 .die-wrapper {

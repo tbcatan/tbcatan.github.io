@@ -1,6 +1,6 @@
 const alertTimeMs = 10 * 1000;
 
-const renderLoop = (getClockState, getClockVersion, publishClockState) => {
+const renderClockSection = (getClockState, getClockVersion, publishClockState) => {
   let clockState;
   let clockVersion;
   let loop = () => {

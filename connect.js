@@ -10,7 +10,8 @@ initMessages().then(() => {
   connected = true;
   element("connecting").classList.add("hidden");
 
-  renderLoop(clock.state, clock.version, clock.publish);
+  renderClockSection(clock.state, clock.version, clock.publish);
+  renderDiceSection();
 
   if (clock.state()) {
     element("game").classList.remove("hidden");

@@ -98,26 +98,34 @@ const getEventDieIcon = (key) => {
   }
 };
 
+let lastDiceRollPosition;
+
 const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
   let diceRoll;
-  let diceRollTurn;
+  let diceRollPosition = {};
   for (let i = clockState?.turn; i >= 0; i--) {
     const rolls = diceState?.[i]?.rolls;
     if (rolls?.length) {
       diceRoll = rolls[rolls.length - 1];
-      diceRollTurn = i;
+      diceRollPosition.turn = i;
+      diceRollPosition.index = rolls.length - 1;
       break;
     }
   }
 
   const canRollDice = clockState?.running != null || clockState?.turn === 0;
-  const isCurrentDiceRoll = diceRoll && diceRollTurn === clockState?.turn;
+  const isCurrentTurnDiceRoll = diceRoll && diceRollPosition.turn === clockState?.turn;
+  const isNewDiceRoll =
+    diceRoll &&
+    lastDiceRollPosition != undefined &&
+    !(diceRollPosition.turn === lastDiceRollPosition.turn && diceRollPosition.index === lastDiceRollPosition.index);
 
   const diceEls = [];
+  let diceIcons;
   if (diceRoll) {
     const createNumberedDie = (number, colorClass) =>
       createElement("div", {
-        class: "die-wrapper",
+        class: ["die-wrapper", isNewDiceRoll ? "dice-roll" : null].filter((s) => s).join(" "),
         children: [
           createElement("i", {
             class: ["fa-solid", getNumberedDieIcon(number), colorClass].filter((s) => s).join(" "),
@@ -127,14 +135,18 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
           }),
         ],
       });
+    diceIcons = [
+      createNumberedDie(diceRoll.redDie, "red-die"),
+      createNumberedDie(diceRoll.yellowDie, "yellow-die"),
+      createElement("img", {
+        class: ["event-die", isNewDiceRoll ? "dice-roll" : null].filter((s) => s).join(" "),
+        attributes: { src: getEventDieIcon(diceRoll.eventDie) },
+      }),
+    ];
     diceEls.push(
       createElement("div", {
-        class: ["dice", !isCurrentDiceRoll ? "faded" : null].filter((s) => s).join(" "),
-        children: [
-          createNumberedDie(diceRoll.redDie, "red-die"),
-          createNumberedDie(diceRoll.yellowDie, "yellow-die"),
-          createElement("img", { class: "event-die", attributes: { src: getEventDieIcon(diceRoll.eventDie) } }),
-        ],
+        class: ["dice", !isCurrentTurnDiceRoll ? "faded" : null].filter((s) => s).join(" "),
+        children: diceIcons,
       })
     );
   } else if (canRollDice) {
@@ -156,7 +168,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
         clockState,
         clockVersion,
       });
-    if (!isCurrentDiceRoll || clockState?.turn === 0) {
+    if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
       diceSection.addEventListener("click", handleDiceRoll);
     } else {
       diceSection.addEventListener("dblclick", handleDiceRoll);
@@ -173,23 +185,29 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
     }
   }
 
+  lastDiceRollPosition = diceRollPosition;
   element("game").replaceChildren(...[element("clock-state"), diceSection].filter((e) => e));
+  if (isNewDiceRoll) {
+    setTimeout(() => diceIcons.forEach((el) => el.classList.remove("dice-roll")), 500);
+  }
 };
 
-dice.subscribe((diceState, diceVersion) =>
-  updateDiceSection({
-    diceState,
-    diceVersion,
-    clockState: clock.state(),
-    clockVersion: clock.version(),
-  })
-);
+const renderDiceSection = () => {
+  dice.subscribe((diceState, diceVersion) =>
+    updateDiceSection({
+      diceState,
+      diceVersion,
+      clockState: clock.state(),
+      clockVersion: clock.version(),
+    })
+  );
 
-clock.subscribe((clockState, clockVersion) =>
-  updateDiceSection({
-    diceState: dice.state(),
-    diceVersion: dice.version(),
-    clockState,
-    clockVersion,
-  })
-);
+  clock.subscribe((clockState, clockVersion) =>
+    updateDiceSection({
+      diceState: dice.state(),
+      diceVersion: dice.version(),
+      clockState,
+      clockVersion,
+    })
+  );
+};
