@@ -113,9 +113,9 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   }
 
   const canRollDice = clockState?.running != null || clockState?.turn === 0;
+  const isCurrentDiceRoll = diceRoll && diceRollTurn === clockState?.turn;
 
   if (diceRoll) {
-    const faded = diceRollTurn !== clockState.turn;
     const createNumberedDie = (number, colorClass) =>
       createElement("div", {
         class: "die-wrapper",
@@ -130,7 +130,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
       });
     diceEls.push(
       createElement("div", {
-        class: ["dice", faded ? "faded" : null].filter((s) => s).join(" "),
+        class: ["dice", !isCurrentDiceRoll ? "faded" : null].filter((s) => s).join(" "),
         children: [
           createNumberedDie(diceRoll.redDie, "red-die"),
           createNumberedDie(diceRoll.yellowDie, "yellow-die"),
@@ -150,14 +150,25 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
         })
       : null;
   if (diceSection && canRollDice) {
-    diceSection.addEventListener("click", () =>
+    const handleDiceRoll = () =>
       rollDice({
         diceState,
         diceVersion,
         clockState,
         clockVersion,
-      })
-    );
+      });
+    if (!isCurrentDiceRoll || clockState?.turn === 0) {
+      diceSection.addEventListener("click", handleDiceRoll);
+    } else {
+      diceSection.addEventListener("dblclick", handleDiceRoll);
+      let touchTimeout;
+      diceSection.addEventListener("touchstart", (event) => {
+        event.preventDefault();
+        clearTimeout(touchTimeout);
+        touchTimeout = setTimeout(handleDiceRoll, 500);
+      });
+      diceSection.addEventListener("touchend", () => clearTimeout(touchTimeout));
+    }
   }
 
   element("game").replaceChildren(...[element("clock-state"), diceSection].filter((e) => e));

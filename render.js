@@ -56,19 +56,15 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
     } else if (paused) {
       clockEl.addEventListener("click", () => publishClockState(resumeClock(clockState), clockVersion));
     } else {
-      const jump = () => publishClockState(jumpToClock(clockState, index), clockVersion);
-      clockEl.addEventListener("dblclick", jump);
+      const handleJump = () => publishClockState(jumpToClock(clockState, index), clockVersion);
+      clockEl.addEventListener("dblclick", handleJump);
       let touchTimeout;
       clockEl.addEventListener("touchstart", (event) => {
         event.preventDefault();
         clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(() => {
-          jump();
-        }, 500);
+        touchTimeout = setTimeout(handleJump, 500);
       });
-      clockEl.addEventListener("touchend", () => {
-        clearTimeout(touchTimeout);
-      });
+      clockEl.addEventListener("touchend", () => clearTimeout(touchTimeout));
     }
     return clockEl;
   });
