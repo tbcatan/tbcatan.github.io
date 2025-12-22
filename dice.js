@@ -167,7 +167,10 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
         clearTimeout(touchTimeout);
         touchTimeout = setTimeout(handleDiceRoll, 500);
       });
-      diceSection.addEventListener("touchend", () => clearTimeout(touchTimeout));
+      diceSection.addEventListener("touchend", () => {
+        clearTimeout(touchTimeout);
+        touchTimeout = undefined;
+      });
     }
   }
 

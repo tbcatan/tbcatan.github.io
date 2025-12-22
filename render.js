@@ -64,7 +64,10 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
         clearTimeout(touchTimeout);
         touchTimeout = setTimeout(handleJump, 500);
       });
-      clockEl.addEventListener("touchend", () => clearTimeout(touchTimeout));
+      clockEl.addEventListener("touchend", () => {
+        clearTimeout(touchTimeout);
+        touchTimeout = undefined;
+      });
     }
     return clockEl;
   });
