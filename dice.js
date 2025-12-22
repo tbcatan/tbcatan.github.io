@@ -1,5 +1,7 @@
 const dice = message("dice");
 
+const diceRollAnimationMs = 500;
+
 const getDiceRoll = () => {
   let roll;
   do {
@@ -160,35 +162,44 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
           children: diceEls,
         })
       : null;
-  if (canRollDice) {
-    const handleDiceRoll = () =>
-      rollDice({
-        diceState,
-        diceVersion,
-        clockState,
-        clockVersion,
-      });
-    if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
-      diceSection.addEventListener("click", handleDiceRoll);
-    } else {
-      diceSection.addEventListener("dblclick", handleDiceRoll);
-      let touchTimeout;
-      diceSection.addEventListener("touchstart", (event) => {
-        event.preventDefault();
-        clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(handleDiceRoll, 500);
-      });
-      diceSection.addEventListener("touchend", () => {
-        clearTimeout(touchTimeout);
-        touchTimeout = undefined;
-      });
+
+  const attachDiceRollHandler = () => {
+    if (canRollDice) {
+      const handleDiceRoll = () =>
+        rollDice({
+          diceState,
+          diceVersion,
+          clockState,
+          clockVersion,
+        });
+      if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
+        diceSection.addEventListener("click", handleDiceRoll);
+      } else {
+        diceSection.addEventListener("dblclick", handleDiceRoll);
+        let touchTimeout;
+        diceSection.addEventListener("touchstart", (event) => {
+          event.preventDefault();
+          clearTimeout(touchTimeout);
+          touchTimeout = setTimeout(handleDiceRoll, 500);
+        });
+        diceSection.addEventListener("touchend", () => {
+          clearTimeout(touchTimeout);
+          touchTimeout = undefined;
+        });
+      }
     }
+  };
+  if (!isNewDiceRoll) {
+    attachDiceRollHandler();
   }
 
   lastDiceRollPosition = diceRollPosition;
   element("game").replaceChildren(...[element("clock-state"), diceSection].filter((e) => e));
   if (isNewDiceRoll) {
-    setTimeout(() => diceIcons.forEach((el) => el.classList.remove("dice-roll")), 500);
+    setTimeout(() => {
+      diceIcons.forEach((el) => el.classList.remove("dice-roll"));
+      attachDiceRollHandler();
+    }, diceRollAnimationMs);
   }
 };
 
