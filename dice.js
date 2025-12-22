@@ -148,7 +148,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
           children: diceEls,
         })
       : null;
-  if (diceSection && canRollDice) {
+  if (canRollDice) {
     const handleDiceRoll = () =>
       rollDice({
         diceState,
