@@ -127,10 +127,10 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   if (diceRoll) {
     const createNumberedDie = (number, colorClass) =>
       createElement("div", {
-        class: ["die-wrapper", isNewDiceRoll ? "dice-roll" : null].filter((s) => s).join(" "),
+        class: classes("die-wrapper", isNewDiceRoll ? "dice-roll" : null),
         children: [
           createElement("i", {
-            class: ["fa-solid", getNumberedDieIcon(number), colorClass].filter((s) => s).join(" "),
+            class: classes("fa-solid", getNumberedDieIcon(number), colorClass),
           }),
           createElement("div", {
             class: `${colorClass}-background`,
@@ -141,13 +141,13 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
       createNumberedDie(diceRoll.redDie, "red-die"),
       createNumberedDie(diceRoll.yellowDie, "yellow-die"),
       createElement("img", {
-        class: ["event-die", isNewDiceRoll ? "dice-roll" : null].filter((s) => s).join(" "),
+        class: classes("event-die", isNewDiceRoll ? "dice-roll" : null),
         attributes: { src: getEventDieIcon(diceRoll.eventDie) },
       }),
     ];
     diceEls.push(
       createElement("div", {
-        class: ["dice", !isCurrentTurnDiceRoll ? "faded" : null].filter((s) => s).join(" "),
+        class: classes("dice", !isCurrentTurnDiceRoll ? "faded" : null),
         children: diceIcons,
       })
     );
@@ -158,7 +158,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   const diceSection =
     diceEls.length > 0
       ? createElement("div", {
-          class: ["dice-section", canRollDice ? "clickable" : null].filter((s) => s).join(" "),
+          class: classes("dice-section", canRollDice ? "clickable" : null),
           children: diceEls,
         })
       : null;

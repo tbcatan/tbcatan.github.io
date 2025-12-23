@@ -52,3 +52,5 @@ const createElement = (tag, options) => {
   }
   return newElement;
 };
+
+const classes = (...classes) => classes.filter((s) => s).join(" ");
