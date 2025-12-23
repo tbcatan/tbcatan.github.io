@@ -1,6 +1,6 @@
 const zoom = () => {
-  const zoomX = window.innerWidth / 426;
-  const zoomY = window.innerHeight / 668;
+  const zoomX = window.innerWidth / 432;
+  const zoomY = window.innerHeight / 674;
   document.documentElement.style.zoom = Math.max(Math.min(zoomX, zoomY, 1), 0.5);
 };
 zoom();
