@@ -173,29 +173,37 @@ button:hover {
   opacity: 0.3;
 }
 
-@keyframes dice-roll {
+@keyframes bounce {
   0% {
-    transform: translate(0, 0) rotate(0);
+    translate: 0 0;
   }
   25% {
-    transform: translate(0, 20%) rotate(90deg);
+    translate: 0 15%;
   }
   50% {
-    transform: translate(0, 0) rotate(180deg);
+    translate: 0 0;
   }
   75% {
-    transform: translate(0, -10%) rotate(270deg);
+    translate: 0 -15%;
   }
   100% {
-    transform: translate(0, 0) rotate(360deg);
+    translate: 0 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    rotate: 0deg;
+  }
+  100% {
+    rotate: 720deg;
   }
 }
 
 .dice-roll {
-  animation-name: dice-roll;
-  animation-duration: 0.25s;
-  animation-iteration-count: 2;
-  animation-timing-function: linear;
+  animation-name: bounce, spin;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
 }
 
 .die-wrapper {
