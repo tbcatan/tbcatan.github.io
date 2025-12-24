@@ -36,7 +36,7 @@ const getRollProbability = (roll) => {
   }
 };
 
-const computeBinomialCdf = (trials, successes, probability) => {
+const computeBinomialMidCdf = (trials, successes, probability) => {
   let sum = 0;
   let nextTerm = Math.pow(1 - probability, trials);
   for (let k = 0; k <= successes; k++) {
@@ -82,7 +82,7 @@ const updateDiceBreakdown = (diceState) => {
           createElement("div", {
             class: "table-cell",
             textContent: (
-              computeBinomialCdf(rolls.length, rollCounts.get(i) ?? 0, getRollProbability(i)) * 100
+              computeBinomialMidCdf(rolls.length, rollCounts.get(i) ?? 0, getRollProbability(i)) * 100
             ).toFixed(1),
           }),
         ],
