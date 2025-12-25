@@ -157,7 +157,12 @@ button:hover {
   animation-timing-function: ease-in-out;
 }
 
-.dice-section {
+#dice-section:empty {
+  display: none;
+}
+
+.dice-container {
+  width: fit-content;
   padding: 0 12px;
   margin: 0 auto;
 }

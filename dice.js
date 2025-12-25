@@ -155,10 +155,10 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
     diceEls.push(template("dice-button"));
   }
 
-  const diceSection =
+  const diceContainer =
     diceEls.length > 0
       ? createElement("div", {
-          class: classes("dice-section", canRollDice ? "clickable" : null),
+          class: classes("dice-container", canRollDice ? "clickable" : null),
           children: diceEls,
         })
       : null;
@@ -173,16 +173,16 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
           clockVersion,
         });
       if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
-        diceSection.addEventListener("click", handleDiceRoll);
+        diceContainer.addEventListener("click", handleDiceRoll);
       } else {
-        diceSection.addEventListener("dblclick", handleDiceRoll);
+        diceContainer.addEventListener("dblclick", handleDiceRoll);
         let touchTimeout;
-        diceSection.addEventListener("touchstart", (event) => {
+        diceContainer.addEventListener("touchstart", (event) => {
           event.preventDefault();
           clearTimeout(touchTimeout);
           touchTimeout = setTimeout(handleDiceRoll, 500);
         });
-        diceSection.addEventListener("touchend", () => {
+        diceContainer.addEventListener("touchend", () => {
           clearTimeout(touchTimeout);
           touchTimeout = undefined;
         });
@@ -194,7 +194,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   }
 
   lastDiceRollPosition = diceRollPosition;
-  element("game").replaceChildren(...[element("clock-state"), diceSection].filter((e) => e));
+  element("dice-section").replaceChildren(...[diceContainer].filter((e) => e));
   if (isNewDiceRoll) {
     setTimeout(() => {
       diceIcons.forEach((el) => el.classList.remove("dice-roll"));
