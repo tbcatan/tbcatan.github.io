@@ -105,11 +105,14 @@ let lastDiceRollPosition;
 const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
   let diceRoll;
   let diceRollPosition = {};
-  for (let i = clockState?.turn; i >= 0; i--) {
-    const rolls = diceState?.[i]?.rolls;
+  for (const turn of Object.keys(diceState ?? {})
+    .map((turn) => Number(turn))
+    .filter((turn) => !Number.isNaN(turn))
+    .sort((a, b) => b - a)) {
+    const rolls = diceState[turn]?.rolls;
     if (rolls?.length) {
       diceRoll = rolls[rolls.length - 1];
-      diceRollPosition.turn = i;
+      diceRollPosition.turn = turn;
       diceRollPosition.index = rolls.length - 1;
       break;
     }
