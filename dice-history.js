@@ -99,6 +99,7 @@ const updateDiceBreakdown = (diceState) => {
     }
   }
 
+  element("dice-roll-count").textContent = rolls.length;
   element("dice-table-body").replaceChildren(...tableRows);
   element("dice-chi-square-value").textContent = rolls.length > 0 ? chiSquare.toFixed(1) : "";
 };
