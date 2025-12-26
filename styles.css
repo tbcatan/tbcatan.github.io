@@ -242,17 +242,20 @@ button:hover {
   z-index: -1;
 }
 
+.event-die {
+  margin-bottom: 5px;
+}
+
 .dice .event-die {
   width: 55px;
   height: 55px;
-  margin-bottom: 5px;
 }
 
 .activate-event-die-button {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 15px;
+  padding: 12px;
 }
 
 .activate-event-die-button .event-die {
