@@ -51,7 +51,9 @@ const computeBinomialMidCdf = (trials, successes, probability) => {
 };
 
 const updateDiceBreakdown = (diceState) => {
-  const rolls = Object.values(diceState ?? {}).flatMap((dice) => dice?.rolls?.filter((roll) => roll.active) ?? []);
+  const rolls = Object.values(diceState?.history ?? {}).flatMap(
+    (dice) => dice?.rolls?.filter((roll) => roll.active) ?? []
+  );
   const rollCounts = new Map();
   rolls.forEach((roll) => {
     const rollValue = roll.redDie + roll.yellowDie;

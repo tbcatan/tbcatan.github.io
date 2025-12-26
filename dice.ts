@@ -7,6 +7,15 @@ interface Dice {
 interface DiceHistory {
   [turn: number]: {
     name: string;
-    rolls: (Dice & { active: boolean })[];
+    rolls: (Dice & { active: boolean; eventDieActive: boolean })[];
   };
+}
+
+interface DiceState {
+  eventDieActive: boolean;
+  barbarians: {
+    position: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    lastMovedTurn: number;
+  };
+  history: DiceHistory;
 }

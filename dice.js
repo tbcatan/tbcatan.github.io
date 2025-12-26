@@ -1,5 +1,7 @@
 const dice = message("dice");
 
+const barbarianCycle = 7;
+
 const diceRollAnimationMs = 500;
 
 const getDiceRoll = () => {
@@ -36,28 +38,84 @@ const getDiceRoll = () => {
 
 const rollDice = ({ diceState, diceVersion, clockState, clockVersion }) => {
   const diceRoll = getDiceRoll();
-
   const turn = clockState.turn;
   const name = clockState.clocks?.[clockState.running ?? clockState.paused]?.name;
-  const currentDice = diceState?.[turn];
+  const currentDice = diceState?.history?.[turn];
+  const eventDieActive = diceState?.eventDieActive ?? false;
+  const barbariansMove = eventDieActive && diceRoll.eventDie === "barbarians";
   dice.publish(
     {
       ...diceState,
-      [turn]: {
-        ...currentDice,
-        name: currentDice?.name ?? name,
-        rolls: [
-          ...(currentDice?.rolls ?? []),
-          {
-            ...diceRoll,
-            active: turn > 0,
-          },
-        ],
+      eventDieActive: eventDieActive,
+      barbarians: {
+        position: ((diceState?.barbarians?.position || barbarianCycle) - barbariansMove) % barbarianCycle,
+        lastMovedTurn: barbariansMove ? turn : diceState?.barbarians?.lastMovedTurn,
+      },
+      history: {
+        ...diceState?.history,
+        [turn]: {
+          ...currentDice,
+          name: currentDice?.name ?? name,
+          rolls: [
+            ...(currentDice?.rolls ?? []),
+            {
+              ...diceRoll,
+              active: turn > 0,
+              eventDieActive: turn > 0 && eventDieActive,
+            },
+          ],
+        },
       },
     },
     diceVersion,
     [{ key: clock.key, version: clockVersion }]
   );
+};
+
+countDownBarbarians = ({ diceState, diceVersion, clockState, clockVersion }) => {
+  dice.publish(
+    {
+      ...diceState,
+      barbarians: {
+        position: ((diceState?.barbarians?.position || barbarianCycle) - 1) % barbarianCycle,
+        lastMovedTurn: clockState?.turn,
+      },
+    },
+    diceVersion,
+    [{ key: clock.key, version: clockVersion }]
+  );
+};
+
+const activateEventDie = ({ diceState, diceVersion, clockState, clockVersion }) => {
+  const turn = clockState.turn;
+  const currentDice = diceState?.history?.[turn];
+  const currentRoll = currentDice?.rolls?.length ? currentDice.rolls[currentDice.rolls.length - 1] : undefined;
+  const newCurrentRoll = currentRoll
+    ? { ...currentRoll, eventDieActive: currentRoll.active || currentRoll.eventDieActive }
+    : undefined;
+  const newCurrentDice = currentDice
+    ? {
+        ...currentDice,
+        rolls: currentDice.rolls?.map((roll, index) =>
+          index === currentDice.rolls.length - 1 ? newCurrentRoll : roll
+        ),
+      }
+    : undefined;
+  const newDiceState = {
+    ...diceState,
+    eventDieActive: true,
+    history: {
+      ...diceState?.history,
+    },
+  };
+  if (currentDice) {
+    newDiceState.history[turn] = newCurrentDice;
+  }
+  if (newCurrentRoll?.eventDie === "barbarians" && newCurrentRoll.eventDieActive && !currentRoll.eventDieActive) {
+    countDownBarbarians({ diceState: newDiceState, diceVersion, clockState, clockVersion });
+  } else {
+    dice.publish(newDiceState, diceVersion, [{ key: clock.key, version: clockVersion }]);
+  }
 };
 
 const getNumberedDieIcon = (number) => {
@@ -95,7 +153,10 @@ const getEventDieIcon = (key) => {
       return "castle-green.svg";
     }
     case "barbarians": {
-      return "ship.svg";
+      return "ship-white.svg";
+    }
+    case "barbarians-attack": {
+      return "ship-red.svg";
     }
   }
 };
@@ -105,11 +166,11 @@ let lastDiceRollPosition;
 const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
   let diceRoll;
   let diceRollPosition = {};
-  for (const turn of Object.keys(diceState ?? {})
+  for (const turn of Object.keys(diceState?.history ?? {})
     .map((turn) => Number(turn))
     .filter((turn) => !Number.isNaN(turn))
     .sort((a, b) => b - a)) {
-    const rolls = diceState[turn]?.rolls;
+    const rolls = diceState.history[turn]?.rolls;
     if (rolls?.length) {
       diceRoll = rolls[rolls.length - 1];
       diceRollPosition.turn = turn;
@@ -125,56 +186,99 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
     lastDiceRollPosition != undefined &&
     !(diceRollPosition.turn === lastDiceRollPosition.turn && diceRollPosition.index === lastDiceRollPosition.index);
 
-  const diceEls = [];
-  let diceIcons;
-  if (diceRoll) {
-    const createNumberedDie = (number, colorClass) =>
-      createElement("div", {
-        class: classes("die-wrapper", isNewDiceRoll ? "dice-roll" : null),
-        children: [
-          createElement("i", {
-            class: classes("fa-solid", getNumberedDieIcon(number), colorClass),
-          }),
-          createElement("div", {
-            class: `${colorClass}-background`,
-          }),
-        ],
-      });
-    diceIcons = [
-      createNumberedDie(diceRoll.redDie, "red-die"),
-      createNumberedDie(diceRoll.yellowDie, "yellow-die"),
-      createElement("img", {
-        class: classes("event-die", isNewDiceRoll ? "dice-roll" : null),
-        attributes: { src: getEventDieIcon(diceRoll.eventDie) },
-      }),
-    ];
-    diceEls.push(
-      createElement("div", {
-        class: classes("dice", !isCurrentTurnDiceRoll ? "faded" : null),
-        children: diceIcons,
-      })
-    );
-  } else if (canRollDice) {
-    diceEls.push(template("dice-button"));
+  const handleDiceRoll = () =>
+    rollDice({
+      diceState,
+      diceVersion,
+      clockState,
+      clockVersion,
+    });
+
+  if (!diceRoll) {
+    const diceSectionContents = [];
+    if (canRollDice) {
+      const diceButton = template("dice-button");
+      diceButton.addEventListener("click", handleDiceRoll);
+      diceSectionContents.push(diceButton);
+    }
+    lastDiceRollPosition = diceRollPosition;
+    element("dice-section").replaceChildren(...diceSectionContents);
+    return;
   }
 
-  const diceContainer =
-    diceEls.length > 0
-      ? createElement("div", {
-          class: classes("dice-container", canRollDice ? "clickable" : null),
-          children: diceEls,
-        })
-      : null;
+  const createNumberedDie = (number, colorClass, options) =>
+    createElement("div", {
+      class: classes("die-wrapper", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
+      children: [
+        createElement("i", {
+          class: classes("fa-solid", getNumberedDieIcon(number), colorClass),
+        }),
+        createElement("div", {
+          class: `${colorClass}-background`,
+        }),
+      ],
+    });
+  const createEventDie = (eventDie, options) =>
+    createElement("img", {
+      class: classes("event-die", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
+      attributes: { src: getEventDieIcon(eventDie) },
+    });
+  const numberedDice = [
+    createNumberedDie(diceRoll.redDie, "red-die", {
+      faded: !isCurrentTurnDiceRoll,
+      animateRoll: isNewDiceRoll,
+    }),
+    createNumberedDie(diceRoll.yellowDie, "yellow-die", {
+      faded: !isCurrentTurnDiceRoll,
+      animateRoll: isNewDiceRoll,
+    }),
+  ];
+  const eventDie = createEventDie(diceRoll.eventDie, {
+    faded: !isCurrentTurnDiceRoll || !diceState.eventDieActive,
+    animateRoll: isNewDiceRoll,
+  });
+  const diceIcons = [...numberedDice, eventDie];
+
+  const diceContainer = createElement("div", {
+    class: classes("dice", canRollDice ? "clickable" : null),
+    children: numberedDice,
+  });
+  const diceSectionContents = [diceContainer];
+  if (diceState.eventDieActive) {
+    diceContainer.append(eventDie);
+  } else if (clockState?.turn > 0) {
+    const activateEventDieButton = createElement("button", {
+      class: "activate-event-die-button",
+      children: [createElement("i", { class: classes("fa-solid", "fa-plus") }), eventDie],
+    });
+    activateEventDieButton.addEventListener("click", () =>
+      activateEventDie({ diceState, diceVersion, clockState, clockVersion })
+    );
+    diceSectionContents.push(activateEventDieButton);
+  }
+  if (diceState.eventDieActive) {
+    const barbarianCountdown =
+      diceState.barbarians?.position ||
+      (diceState.barbarians?.lastMovedTurn != undefined && diceState.barbarians.lastMovedTurn === clockState?.turn
+        ? 0
+        : barbarianCycle);
+    const barbarianCountdownEl = createElement("div", {
+      class: classes("barbarian-countdown", "clickable", barbarianCountdown === 0 ? "barbarian-attack" : null),
+      children: [
+        createElement("span", {
+          children: [barbarianCountdown],
+        }),
+        createEventDie(barbarianCountdown === 0 ? "barbarians-attack" : "barbarians"),
+      ],
+    });
+    addLongPressListener(barbarianCountdownEl, () =>
+      countDownBarbarians({ diceState, diceVersion, clockState, clockVersion })
+    );
+    diceSectionContents.push(barbarianCountdownEl);
+  }
 
   const attachDiceRollHandler = () => {
     if (canRollDice) {
-      const handleDiceRoll = () =>
-        rollDice({
-          diceState,
-          diceVersion,
-          clockState,
-          clockVersion,
-        });
       if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
         diceContainer.addEventListener("click", handleDiceRoll);
       } else {
@@ -187,7 +291,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   }
 
   lastDiceRollPosition = diceRollPosition;
-  element("dice-section").replaceChildren(...[diceContainer].filter((e) => e));
+  element("dice-section").replaceChildren(...diceSectionContents);
   if (isNewDiceRoll) {
     setTimeout(() => {
       diceIcons.forEach((el) => el.classList.remove("dice-roll"));
