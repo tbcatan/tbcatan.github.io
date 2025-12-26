@@ -69,21 +69,21 @@ const updateDiceBreakdown = (diceState) => {
         children: [
           createElement("div", {
             class: "table-cell",
-            textContent: String(i),
+            children: [i],
           }),
           createElement("div", {
             class: "table-cell",
-            textContent: String(rollCounts.get(i) ?? 0),
+            children: [rollCounts.get(i) ?? 0],
           }),
           createElement("div", {
             class: "table-cell",
-            textContent: (rolls.length * getRollProbability(i)).toFixed(1),
+            children: [(rolls.length * getRollProbability(i)).toFixed(1)],
           }),
           createElement("div", {
             class: "table-cell",
-            textContent: (
-              computeBinomialMidCdf(rolls.length, rollCounts.get(i) ?? 0, getRollProbability(i)) * 100
-            ).toFixed(1),
+            children: [
+              (computeBinomialMidCdf(rolls.length, rollCounts.get(i) ?? 0, getRollProbability(i)) * 100).toFixed(1),
+            ],
           }),
         ],
       })
