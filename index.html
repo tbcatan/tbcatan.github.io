@@ -41,37 +41,25 @@
       <i id="screen-unlocked" class="fa-solid fa-unlock"></i>
     </div>
   </body>
-  <template id="clock">
-    <div class="clock">
+  <template id="templates">
+    <div id="clock" class="clock">
       <div class="name"></div>
       <div class="time"></div>
     </div>
-  </template>
-  <template id="play-button">
-    <button class="clock-button" onclick="clock.publish(resumeClock(clock.state()))">
+    <button id="play-button" class="clock-button">
       <i class="fa-solid fa-play"></i>
     </button>
-  </template>
-  <template id="pause-button">
-    <button class="clock-button" onclick="clock.publish(pauseClock(clock.state()))">
+    <button id="pause-button" class="clock-button">
       <i class="fa-solid fa-pause"></i>
     </button>
-  </template>
-  <template id="edit-button">
-    <button class="clock-button" onclick="openEditMenu()">
+    <button id="edit-button" class="clock-button" onclick="openEditMenu()">
       <i class="fa-solid fa-pen-to-square"></i>
     </button>
-  </template>
-  <template id="dice-history-button">
-    <button class="clock-button" onclick="openDiceHistory()">
+    <button id="dice-history-button" class="clock-button" onclick="openDiceHistory()">
       <i class="fa-solid fa-chart-simple"></i>
     </button>
-  </template>
-  <template id="dice-button">
-    <button><i class="fa-solid fa-dice"></i></button>
-  </template>
-  <template id="create-clock">
-    <div class="create-clock">
+    <button id="dice-button"><i class="fa-solid fa-dice"></i></button>
+    <div id="create-clock" class="create-clock">
       <div class="player-input">
         <label for="player-input">Players:</label>
         <div id="player-input" contenteditable></div>

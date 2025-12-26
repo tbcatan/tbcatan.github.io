@@ -56,18 +56,7 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
     } else if (paused) {
       clockEl.addEventListener("click", () => publishClockState(resumeClock(clockState), clockVersion));
     } else {
-      const handleJump = () => publishClockState(jumpToClock(clockState, index), clockVersion);
-      clockEl.addEventListener("dblclick", handleJump);
-      let touchTimeout;
-      clockEl.addEventListener("touchstart", (event) => {
-        event.preventDefault();
-        clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(handleJump, 500);
-      });
-      clockEl.addEventListener("touchend", () => {
-        clearTimeout(touchTimeout);
-        touchTimeout = undefined;
-      });
+      addLongPressListener(clockEl, () => publishClockState(jumpToClock(clockState, index), clockVersion));
     }
     return clockEl;
   });
@@ -75,9 +64,13 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
 
   const controls = [];
   if (clockState?.running != null) {
-    controls.push(template("pause-button"));
+    const pauseButton = template("pause-button");
+    pauseButton.addEventListener("click", () => publishClockState(pauseClock(clockState), clockVersion));
+    controls.push(pauseButton);
   } else if (clockState?.paused != null) {
-    controls.push(template("play-button"));
+    const playButton = template("play-button");
+    playButton.addEventListener("click", () => publishClockState(resumeClock(clockState), clockVersion));
+    controls.push(playButton);
   }
   controls.push(template("edit-button"));
   controls.push(template("dice-history-button"));
@@ -87,7 +80,7 @@ const renderClocks = (clockState, clockVersion, publishClockState, now) => {
 };
 
 const createClock = ({ name, time, running, paused }) => {
-  const clock = template("clock").querySelector(".clock");
+  const clock = template("clock");
   if (running) {
     clock.classList.add("running");
   }

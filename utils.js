@@ -31,7 +31,11 @@ const isBase64UrlSafe = (string) => /^[a-zA-Z0-9_\-]+$/.test(string);
 
 const element = (id, root) => (root ?? document).getElementById(id);
 
-const template = (id) => element(id)?.content.cloneNode(true);
+const template = (id) => {
+  const instance = element(id, element("templates").content)?.cloneNode(true);
+  instance.removeAttribute("id");
+  return instance;
+};
 
 const createElement = (tag, options) => {
   const newElement = document.createElement(tag);
@@ -54,3 +58,17 @@ const createElement = (tag, options) => {
 };
 
 const classes = (...classes) => classes.filter((s) => s).join(" ");
+
+const addLongPressListener = (targetElement, eventHandler) => {
+  targetElement.addEventListener("dblclick", eventHandler);
+  let touchTimeout;
+  targetElement.addEventListener("touchstart", (event) => {
+    event.preventDefault();
+    clearTimeout(touchTimeout);
+    touchTimeout = setTimeout(eventHandler, 500);
+  });
+  targetElement.addEventListener("touchend", () => {
+    clearTimeout(touchTimeout);
+    touchTimeout = undefined;
+  });
+};

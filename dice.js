@@ -178,17 +178,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
       if (!isCurrentTurnDiceRoll || clockState?.turn === 0) {
         diceContainer.addEventListener("click", handleDiceRoll);
       } else {
-        diceContainer.addEventListener("dblclick", handleDiceRoll);
-        let touchTimeout;
-        diceContainer.addEventListener("touchstart", (event) => {
-          event.preventDefault();
-          clearTimeout(touchTimeout);
-          touchTimeout = setTimeout(handleDiceRoll, 500);
-        });
-        diceContainer.addEventListener("touchend", () => {
-          clearTimeout(touchTimeout);
-          touchTimeout = undefined;
-        });
+        addLongPressListener(diceContainer, handleDiceRoll);
       }
     }
   };
