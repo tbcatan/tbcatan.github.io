@@ -29,10 +29,10 @@ const base64UrlSafeEncode = (uint8Array) => {
 
 const isBase64UrlSafe = (string) => /^[a-zA-Z0-9_\-]+$/.test(string);
 
-const element = (id, root) => (root ?? document).getElementById(id);
+const element = (id) => document.getElementById(id);
 
 const template = (id) => {
-  const instance = element(id, element("templates").content)?.cloneNode(true);
+  const instance = element("templates").content.getElementById(id)?.cloneNode(true);
   instance.removeAttribute("id");
   return instance;
 };

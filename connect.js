@@ -17,7 +17,7 @@ initMessages().then(() => {
     element("game").classList.remove("hidden");
   } else {
     openEditMenu((createClockMenu) => {
-      element("cancel-create-clock", createClockMenu).remove();
+      createClockMenu.querySelector("#cancel-create-clock").remove();
     });
     const subscription = clock.subscribe((clockState) => {
       if (clockState) {
