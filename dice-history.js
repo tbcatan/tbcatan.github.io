@@ -110,25 +110,32 @@ const updateDiceHistory = (diceState) => {
   const diceHistoryEntries = Object.entries(diceState?.history ?? {})
     .filter(([_, info]) => info?.rolls?.length)
     .sort(([a], [b]) => b - a)
-    .map(([turn, info]) => {
-      const historyEl = template("dice-history-entry");
-      historyEl.querySelector(".dice-history-turn").textContent = `Turn ${turn}${info.name ? ` (${info.name})` : ""}:`;
-      historyEl.querySelector(".dice-history-rolls").replaceChildren(
-        ...info.rolls
-          .filter((diceRoll) => diceRoll)
-          .map((diceRoll) =>
-            createElement("div", {
-              class: "dice",
-              children: [
-                createNumberedDie(diceRoll.redDie, "red-die", { faded: !diceRoll.active }),
-                createNumberedDie(diceRoll.yellowDie, "yellow-die", { faded: !diceRoll.active }),
-                createEventDie(diceRoll.eventDie, { faded: !diceRoll.active || !diceRoll.eventDieActive }),
-              ],
-            })
-          )
-      );
-      return historyEl;
-    });
+    .map(([turn, info]) =>
+      createElement("div", {
+        class: "dice-history-entry",
+        children: [
+          createElement("div", {
+            class: "dice-history-turn",
+            children: [`Turn ${turn}${info.name ? ` (${info.name})` : ""}:`],
+          }),
+          createElement("div", {
+            class: "dice-history-rolls",
+            children: info.rolls
+              .filter((diceRoll) => diceRoll)
+              .map((diceRoll) =>
+                createElement("div", {
+                  class: "dice",
+                  children: [
+                    createNumberedDie(diceRoll.redDie, "red-die", { faded: !diceRoll.active }),
+                    createNumberedDie(diceRoll.yellowDie, "yellow-die", { faded: !diceRoll.active }),
+                    createEventDie(diceRoll.eventDie, { faded: !diceRoll.active || !diceRoll.eventDieActive }),
+                  ],
+                })
+              ),
+          }),
+        ],
+      })
+    );
 
   const diceHistoryEl = element("dice-history-section");
   if (diceHistoryEntries.length) {
