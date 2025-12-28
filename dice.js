@@ -61,7 +61,7 @@ const rollDice = ({ diceState, diceVersion, clockState, clockVersion }) => {
             {
               ...diceRoll,
               active: turn > 0,
-              eventDieActive: turn > 0 && eventDieActive,
+              eventDieActive: eventDieActive,
             },
           ],
         },
@@ -90,9 +90,7 @@ const activateEventDie = ({ diceState, diceVersion, clockState, clockVersion }) 
   const turn = clockState.turn;
   const currentDice = diceState?.history?.[turn];
   const currentRoll = currentDice?.rolls?.length ? currentDice.rolls[currentDice.rolls.length - 1] : undefined;
-  const newCurrentRoll = currentRoll
-    ? { ...currentRoll, eventDieActive: currentRoll.active || currentRoll.eventDieActive }
-    : undefined;
+  const newCurrentRoll = currentRoll ? { ...currentRoll, eventDieActive: true } : undefined;
   const newCurrentDice = currentDice
     ? {
         ...currentDice,

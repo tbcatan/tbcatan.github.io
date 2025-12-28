@@ -106,7 +106,7 @@ const updateDiceBreakdown = (diceState) => {
   element("dice-chi-square-value").textContent = rolls.length > 0 ? chiSquare.toFixed(1) : "";
 };
 
-const updateDiceHistory = (diceState) => {
+const updateDiceHistory = (diceState, diceVersion) => {
   const diceHistoryEntries = Object.entries(diceState?.history ?? {})
     .filter(([_, info]) => info?.rolls?.length)
     .sort(([a], [b]) => b - a)
@@ -124,12 +124,30 @@ const updateDiceHistory = (diceState) => {
               .filter((diceRoll) => diceRoll)
               .map((diceRoll) =>
                 createElement("div", {
-                  class: "dice",
+                  class: classes("dice", "clickable"),
                   children: [
                     createNumberedDie(diceRoll.redDie, "red-die", { faded: !diceRoll.active }),
                     createNumberedDie(diceRoll.yellowDie, "yellow-die", { faded: !diceRoll.active }),
                     createEventDie(diceRoll.eventDie, { faded: !diceRoll.active || !diceRoll.eventDieActive }),
                   ],
+                  init: (diceEl) =>
+                    addLongPressListener(diceEl, () =>
+                      dice.publish(
+                        {
+                          ...diceState,
+                          history: {
+                            ...diceState.history,
+                            [turn]: {
+                              ...info,
+                              rolls: info.rolls.map((roll) =>
+                                roll === diceRoll ? { ...roll, active: !roll.active } : roll
+                              ),
+                            },
+                          },
+                        },
+                        diceVersion
+                      )
+                    ),
                 })
               ),
           }),

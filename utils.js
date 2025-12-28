@@ -51,6 +51,9 @@ const createElement = (tag, options) => {
   if (options?.children) {
     newElement.append(...options.children);
   }
+  if (options?.init) {
+    options.init(newElement);
+  }
   return newElement;
 };
 
