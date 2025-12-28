@@ -357,14 +357,14 @@ input,
   align-items: start;
   gap: 36px;
   white-space: nowrap;
-  position: relative;
 }
 
 #dice-back-button {
-  font-size: 30px;
-  position: absolute;
+  font-size: 36px;
+  position: fixed;
   top: 0;
-  left: 3px;
+  left: 0;
+  padding: 10px 20px;
 }
 
 .dice-breakdown,
