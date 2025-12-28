@@ -359,6 +359,14 @@ input,
   position: relative;
 }
 
+@media (min-width: 787px) {
+  #dice-history {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+  }
+}
+
 #dice-back-button {
   font-size: 30px;
   position: absolute;
@@ -380,7 +388,7 @@ input,
 
 .dice-history-log {
   display: grid;
-  grid-template-columns: min-content 1fr;
+  grid-template-columns: repeat(2, min-content);
   column-gap: 24px;
   row-gap: 12px;
 }
@@ -394,12 +402,6 @@ input,
 
 .dice-history-turn {
   justify-self: end;
-}
-
-.dice-history-rolls {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 24px;
 }
 
 .table {
