@@ -108,8 +108,8 @@ const updateDiceBreakdown = (diceState) => {
 
 const updateDiceHistory = (diceState) => {
   const diceHistoryEntries = Object.entries(diceState?.history ?? {})
-    .filter(([turn, info]) => info?.rolls?.length)
-    .sort((a, b) => b[0] - a[0])
+    .filter(([_, info]) => info?.rolls?.length)
+    .sort(([a], [b]) => b - a)
     .map(([turn, info]) => {
       const historyEl = template("dice-history-entry");
       historyEl.querySelector(".dice-history-turn").textContent = `Turn ${turn}${info.name ? ` (${info.name})` : ""}:`;
@@ -130,12 +130,15 @@ const updateDiceHistory = (diceState) => {
       return historyEl;
     });
 
+  const diceHistoryEl = element("dice-history-section");
   if (diceHistoryEntries.length) {
-    element("dice-history-section").classList.remove("hidden");
+    diceHistoryEl.replaceChildren(
+      createElement("div", { children: ["Dice History"] }),
+      createElement("div", { class: "dice-history-log", children: diceHistoryEntries })
+    );
   } else {
-    element("dice-history-section").classList.add("hidden");
+    diceHistoryEl.replaceChildren();
   }
-  element("dice-history-log").replaceChildren(...diceHistoryEntries);
 };
 
 dice.subscribe(updateDiceBreakdown);

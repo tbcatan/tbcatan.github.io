@@ -1,4 +1,6 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -372,7 +374,11 @@ input,
   gap: 12px;
 }
 
-#dice-history-log {
+#dice-history-section:empty {
+  display: none;
+}
+
+.dice-history-log {
   display: grid;
   grid-template-columns: min-content 1fr;
   column-gap: 24px;
