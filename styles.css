@@ -359,7 +359,7 @@ input,
   position: relative;
 }
 
-@media (min-width: 787px) {
+@media (min-width: 850px) {
   #dice-history {
     display: flex;
     flex-direction: row;
