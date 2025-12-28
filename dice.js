@@ -161,8 +161,26 @@ const getEventDieIcon = (key) => {
   }
 };
 
-let lastDiceRollPosition;
+const createNumberedDie = (number, colorClass, options) =>
+  createElement("div", {
+    class: classes("die-wrapper", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
+    children: [
+      createElement("i", {
+        class: classes("fa-solid", getNumberedDieIcon(number), colorClass),
+      }),
+      createElement("div", {
+        class: `${colorClass}-background`,
+      }),
+    ],
+  });
 
+const createEventDie = (eventDie, options) =>
+  createElement("img", {
+    class: classes("event-die", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
+    attributes: { src: getEventDieIcon(eventDie) },
+  });
+
+let lastDiceRollPosition;
 const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion }) => {
   let diceRoll;
   let diceRollPosition = {};
@@ -206,23 +224,6 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
     return;
   }
 
-  const createNumberedDie = (number, colorClass, options) =>
-    createElement("div", {
-      class: classes("die-wrapper", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
-      children: [
-        createElement("i", {
-          class: classes("fa-solid", getNumberedDieIcon(number), colorClass),
-        }),
-        createElement("div", {
-          class: `${colorClass}-background`,
-        }),
-      ],
-    });
-  const createEventDie = (eventDie, options) =>
-    createElement("img", {
-      class: classes("event-die", options?.faded ? "faded" : null, options?.animateRoll ? "dice-roll" : null),
-      attributes: { src: getEventDieIcon(eventDie) },
-    });
   const numberedDice = [
     createNumberedDie(diceRoll.redDie, "red-die", {
       faded: !isCurrentTurnDiceRoll,

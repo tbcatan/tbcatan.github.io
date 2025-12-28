@@ -20,6 +20,7 @@
       </div>
       <div id="edit"></div>
       <div id="dice-history" class="hidden">
+        <i id="dice-back-button" class="fa-solid fa-arrow-left clickable" onclick="closeDiceHistory()"></i>
         <div class="dice-breakdown">
           <div>Dice Breakdown (<span id="dice-roll-count"></span> rolls)</div>
           <div class="table table-4">
@@ -33,7 +34,10 @@
           </div>
           <div>χ² = <span id="dice-chi-square-value"></span></div>
         </div>
-        <button onclick="closeDiceHistory()">Back</button>
+        <div id="dice-history-section" class="hidden">
+          <div>Dice History</div>
+          <div id="dice-history-log"></div>
+        </div>
       </div>
     </div>
     <div class="screen-lock">
@@ -75,6 +79,10 @@
       <div id="create-clock-controls" class="controls">
         <button id="cancel-create-clock" onclick="closeEditMenu()">Cancel</button>
         <button id="submit-create-clock" onclick="createNewClock(publishNewClock)">Create New Clock</button>
+      </div>
+      <div id="dice-history-entry" class="dice-history-entry">
+        <div class="dice-history-turn"></div>
+        <div class="dice-history-rolls"></div>
       </div>
     </div>
   </template>

@@ -106,7 +106,41 @@ const updateDiceBreakdown = (diceState) => {
   element("dice-chi-square-value").textContent = rolls.length > 0 ? chiSquare.toFixed(1) : "";
 };
 
+const updateDiceHistory = (diceState) => {
+  const diceHistoryEntries = Object.entries(diceState?.history ?? {})
+    .filter(([turn, info]) => info?.rolls?.length)
+    .sort((a, b) => b[0] - a[0])
+    .map(([turn, info]) => {
+      const historyEl = template("dice-history-entry");
+      historyEl.querySelector(".dice-history-turn").textContent = `Turn ${turn}${info.name ? ` (${info.name})` : ""}:`;
+      historyEl.querySelector(".dice-history-rolls").replaceChildren(
+        ...info.rolls
+          .filter((diceRoll) => diceRoll)
+          .map((diceRoll) =>
+            createElement("div", {
+              class: "dice",
+              children: [
+                createNumberedDie(diceRoll.redDie, "red-die", { faded: !diceRoll.active }),
+                createNumberedDie(diceRoll.yellowDie, "yellow-die", { faded: !diceRoll.active }),
+                createEventDie(diceRoll.eventDie, { faded: !diceRoll.active || !diceRoll.eventDieActive }),
+              ],
+            })
+          )
+      );
+      return historyEl;
+    });
+
+  if (diceHistoryEntries.length) {
+    element("dice-history-section").classList.remove("hidden");
+  } else {
+    element("dice-history-section").classList.add("hidden");
+  }
+  element("dice-history-log").replaceChildren(...diceHistoryEntries);
+};
+
 dice.subscribe(updateDiceBreakdown);
+
+dice.subscribe(updateDiceHistory);
 
 const openDiceHistory = () => {
   element("game").classList.add("hidden");
