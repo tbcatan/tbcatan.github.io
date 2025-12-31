@@ -246,14 +246,16 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
   if (diceState.eventDieActive) {
     diceContainer.append(eventDie);
   } else if (clockState?.turn > 0) {
-    const activateEventDieButton = createElement("button", {
-      class: "activate-event-die-button",
-      children: [createElement("i", { class: classes("fa-solid", "fa-plus") }), eventDie],
-    });
-    activateEventDieButton.addEventListener("click", () =>
-      activateEventDie({ diceState, diceVersion, clockState, clockVersion })
+    diceSectionContents.push(
+      createElement("button", {
+        class: "activate-event-die-button",
+        children: [createElement("i", { class: classes("fa-solid", "fa-plus") }), eventDie],
+        init: (activateEventDieButton) =>
+          addLongPressListener(activateEventDieButton, () =>
+            activateEventDie({ diceState, diceVersion, clockState, clockVersion })
+          ),
+      })
     );
-    diceSectionContents.push(activateEventDieButton);
   }
   if (diceState.eventDieActive) {
     const barbarianCountdown =
