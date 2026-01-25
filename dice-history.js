@@ -52,7 +52,7 @@ const computeBinomialMidCdf = (trials, successes, probability) => {
 
 const updateDiceBreakdown = (diceState) => {
   const rolls = Object.values(diceState?.history ?? {}).flatMap(
-    (dice) => dice?.rolls?.filter((roll) => roll.active) ?? []
+    (dice) => dice?.rolls?.filter((roll) => roll.active) ?? [],
   );
   const rollCounts = new Map();
   rolls.forEach((roll) => {
@@ -88,7 +88,7 @@ const updateDiceBreakdown = (diceState) => {
             ],
           }),
         ],
-      })
+      }),
     );
   }
 
@@ -122,6 +122,7 @@ const updateDiceHistory = (diceState, diceVersion) => {
             class: "dice-history-rolls",
             children: info.rolls
               .filter((diceRoll) => diceRoll)
+              .reverse()
               .map((diceRoll) =>
                 createElement("div", {
                   class: classes("dice", "clickable"),
@@ -140,26 +141,26 @@ const updateDiceHistory = (diceState, diceVersion) => {
                             [turn]: {
                               ...info,
                               rolls: info.rolls.map((roll) =>
-                                roll === diceRoll ? { ...roll, active: !roll.active } : roll
+                                roll === diceRoll ? { ...roll, active: !roll.active } : roll,
                               ),
                             },
                           },
                         },
-                        diceVersion
-                      )
+                        diceVersion,
+                      ),
                     ),
-                })
+                }),
               ),
           }),
         ],
-      })
+      }),
     );
 
   const diceHistoryEl = element("dice-history-section");
   if (diceHistoryEntries.length) {
     diceHistoryEl.replaceChildren(
       createElement("div", { children: ["Dice History"] }),
-      createElement("div", { class: "dice-history-log", children: diceHistoryEntries })
+      createElement("div", { class: "dice-history-log", children: diceHistoryEntries }),
     );
   } else {
     diceHistoryEl.replaceChildren();
