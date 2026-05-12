@@ -153,8 +153,11 @@ const getEventDieIcon = (key) => {
     case "barbarians": {
       return "ship-white.svg";
     }
+    case "barbarians-countdown": {
+      return "ship-countdown-blue.svg";
+    }
     case "barbarians-attack": {
-      return "ship-red.svg";
+      return "ship-countdown-red.svg";
     }
   }
 };
@@ -269,7 +272,7 @@ const updateDiceSection = ({ diceState, diceVersion, clockState, clockVersion })
         createElement("span", {
           children: [barbarianCountdown],
         }),
-        createEventDie(barbarianCountdown === 0 ? "barbarians-attack" : "barbarians"),
+        createEventDie(barbarianCountdown === 0 ? "barbarians-attack" : "barbarians-countdown"),
       ],
     });
     addLongPressListener(barbarianCountdownEl, () =>
